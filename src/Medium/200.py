@@ -119,33 +119,38 @@ class Solution:
 
 
 
-# Algo. 3, Union Find, not finished yet!
+# Algo. 3, Union Find; 
 class UnionFind():
     def __init__(self, grid):
-        nr = len(grid)
-        nc = len(grid[0])
-        self.count  = 0
-        self.parent = []
-        self.rank   = []
-        
-        for i in range(nr):
-            for j in range(nc):
-                if grid[i][j] == '1': 
-                    self.parent.append(i*nc + j)
-                    self.count += 1
-                else: self.parent.append(-1)
-                self.rank.append(0)
+        # A lot can be learned about python programming from this code!
+        nr, nc = len(grid), len(grid[0])
+        self.parent = [i  for i in range(nr*nc)]
+        self.rank   = [0]*(nr*nc)
+        self.count  = sum(grid[i][j] == '1' for i in range(nr)  for j in range(nc))
                 
     def find(self, idx):
+        # The following code segment of iteration also works;
+        # But it does NOT set "self.parent[idx] = self.find(self.parent[idx])" like the recursive algo. does  
+        # which is actually the pass-compression algo. to improve the TC. 
+        #while self.parent[idx] != idx:
+        #    idx = self.parent[idx]
+        #return self.parent[idx]
+        
         if self.parent[idx] != idx: 
-            # parent[idx] = find(self, parent[idx])
-            parent[idx] = find(parent[idx])
+            # The following code line does NOT work, have to use self.find, or ERROR of "'find' not defined"!
+            # self.parent[idx] = find(self, self.parent[idx])
+            
+            # have to use self.parent[idx], not just parent!
+            # pass-compression algo. to improve the TC, Ref. p508 <<Intro. To Algo.>>.
+            self.parent[idx] = self.find(self.parent[idx])  
         return self.parent[idx]
     
     def union(self, x, y):
-        # rootx, rooty = self.find(self, x), self.find(self, y)
         rootx = self.find(x)
         rooty = self.find(y)
+        # Union by rank
+        # With this union by rank algo., do all the final unions have maximum rank of 1? i.e. 
+        # one root, with all leafs directly point to it? Then there's no need for pass-compression? 
         if rootx != rooty:
             if self.rank[rootx] > self.rank[rooty]: 
                 self.parent[rooty] = rootx
@@ -164,9 +169,17 @@ class Solution:
         : type grid: List[List[str]]
         : rtype: int   
         
-        : TC: 5.21%
-        : SC: 19.53%
-        :\1. 
+        : TC: 5.22%
+        : SC: 15.50%
+        :\1. Union find (i.e. Disjoint set) algo., a good ref. is <<Intro. To Algo.>>. 
+        : It usually starts with individual element as initial set, and then union (combine) them according
+        : adjacency relationships. You can use linked list or tree (forest) to implement the algo. But here 
+        : can simply use self.parent[idx] to store (point to) the parent ID. Each element is index-based
+        : within [0..nr*nc], and you also use self.rank[idx] to store the rank of each element. 
+        :\Each set has a representative which is usually the root, each set has a tree structure, all the 
+        : disjoint sets are the forest structure.
+        :\The TC is O(nr*nc), Note that Union operation takes essentially constant time when UnionFind is 
+        : implemented with both path compression and union by rank.
         """
 
         nr = len(grid)
@@ -180,9 +193,13 @@ class Solution:
             for c in range(nc):
                 if grid[r][c] == '1':
                     grid[r][c] == '0'
-                    if r-1 >= 0 and grid[r-1][c] == '1': uf.Union(r*nc+c, (r-1)*nc+c)
+                    # Within the following 'if' statement, you can NOT set like grid[r-1][c]='0' yet, 
+                    # or it will not extend to adjacent elements of '1's.
+                    
+                    # No need to check grid[r-1][c] anymore, which has already been processed before.
+                    #if r-1 >= 0 and grid[r-1][c] == '1': uf.union(r*nc+c, (r-1)*nc+c)
                     if r+1 < nr and grid[r+1][c] == '1': uf.union(r*nc+c, (r+1)*nc+c)
-                    if c-1 >= 0 and grid[r][c-1] == '1': uf.union(r*nc+c, r*nc + c-1)
+                    #if c-1 >= 0 and grid[r][c-1] == '1': uf.union(r*nc+c, r*nc + c-1)
                     if c+1 < nc and grid[r][c+1] == '1': uf.union(r*nc+c, r*nc + c+1)
         
         return uf.count
