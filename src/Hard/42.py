@@ -1,3 +1,4 @@
+# Algo. 1, BF.;
 class Solution:
     def trap(self, height):
         """
@@ -31,6 +32,7 @@ class Solution:
 
 
 
+# Algo. 2, DP; 
 class Solution:
     def trap(self, height):
         """
@@ -78,6 +80,7 @@ class Solution:
 
 
 
+#Algo 3, Two-point; 
 class Solution:
     def trap(self, height):
         """
@@ -116,6 +119,7 @@ class Solution:
 
 
 
+# Algo. 4, Using Stack; 
 class Solution:
     def trap(self, height):
         """
@@ -168,5 +172,50 @@ class Solution:
                 
                 lst_st.append(i_curr)
                 i_curr += 1
+                    
+        return n_res
+
+
+
+
+# Algo. 5, Using Stack;
+class Solution:
+    def trap(self, height):
+        """
+        : type height: List[int]
+        : rtype: int
+        :
+        : TC: 13.66%, O(n);
+        : SC: 5.18%, O(n) worst case for stack; 
+        :\Algo. Stack as Approach 3, same as Algo. 4, with some code generalization, remove the code
+        : to find the 'i_start'. 
+        """
+        
+        n = len(height)
+        # Handle special cases first which is necessary!
+        if n <= 2: return 0
+        
+        n_res  = 0
+        lst_st = []
+        
+        i_curr = 0
+        while i_curr < n:
+            if not lst_st: 
+                lst_st.append(i_curr); 
+                i_curr += 1
+            else:
+                if height[i_curr] <= height[lst_st[len(lst_st)-1]]:
+                    lst_st.append(i_curr)
+                    i_curr += 1          
+                else:
+                    while lst_st and height[i_curr] > height[lst_st[len(lst_st)-1]]:
+                        i_poped = lst_st.pop()
+                        if not lst_st: break
+                        
+                        h_diff = min(height[i_curr], height[lst_st[len(lst_st)-1]]) - height[i_poped]
+                        dist   = i_curr - lst_st[len(lst_st)-1] - 1
+                        n_res += h_diff * dist
+                    lst_st.append(i_curr)
+                    i_curr += 1
                     
         return n_res
