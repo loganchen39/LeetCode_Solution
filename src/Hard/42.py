@@ -129,7 +129,8 @@ class Solution:
         : max_right, while this algo. is like row-wise, looping from left to right, for the current index
         : of column, you can NOT know the total amount of water to store in this column as you do NOT know
         : the max_right, but you can compute the row-wise water amount to store so far as 
-        : height[i_curr] > height[lst_st[len(lst_st)-1]]. 
+        : height[i_curr] > height[lst_st[len(lst_st)-1]].
+        : One Ref. at: https://leetcode.wang/leetCode-42-Trapping-Rain-Water.html 
         """
         
         n = len(height)
