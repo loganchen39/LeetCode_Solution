@@ -43,3 +43,36 @@ class Solution:
 
 
 
+class Solution:
+    def lengthOfLongestSubstring(self, s):
+        """
+        : type s: str
+        : rtype: int
+        :
+        : TC: 33.69%, best O(n), worst O(n**2)?
+        : SC: 5.05%, Best O(1), worst O(n) for dict, average should be O(n)?
+        :\Algo. Sliding window with Two-Pointers and hashtable, the pointers are more facile or lightweighted to use. 
+        """
+        
+        n = len(s)
+        if n <= 1: return n
+        
+        n_res = 1
+        pl, pr = 0, 1
+        d = {s[0]:0}
+        while pr < n:
+            if s[pr] not in d:
+                d[s[pr]] = pr
+                pr += 1
+            else:
+                # This is "SyntaxError: invalid syntax": n_res = pr - pl if pr - pl > n_res
+                if pr - pl > n_res: n_res = pr - pl 
+                pl_tmp = d[s[pr]] + 1
+                for i in range(pl, d[s[pr]]+1): d.pop(s[i])
+                d[s[pr]] = pr  # don't forget this!
+                pl = pl_tmp
+                pr += 1
+        
+        # don't forget to compare the last.
+        if pr - pl > n_res: n_res = pr - pl
+        return n_res
