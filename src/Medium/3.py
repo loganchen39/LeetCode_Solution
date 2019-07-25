@@ -43,6 +43,7 @@ class Solution:
 
 
 
+# Algo. 2
 class Solution:
     def lengthOfLongestSubstring(self, s):
         """
@@ -50,8 +51,11 @@ class Solution:
         : rtype: int
         :
         : TC: 33.69%, best O(n), worst O(n**2)?
+        : TC: 33.69%, O(2n) (worst case) = O(n); 
         : SC: 5.05%, Best O(1), worst O(n) for dict, average should be O(n)?
-        :\Algo. Sliding window with Two-Pointers and hashtable, the pointers are more facile or lightweighted to use. 
+        : SC: 5.05%, O(min(m,n)), the size of the Set is upper bounded by n and the size of charset m; 
+        :\Algo. Sliding window with Two-Pointers and hashtable, the pointers are more facile or lightweighted to use.
+        : This is the same algo. as Approach 3;
         """
         
         n = len(s)
@@ -76,3 +80,38 @@ class Solution:
         # don't forget to compare the last.
         if pr - pl > n_res: n_res = pr - pl
         return n_res
+
+
+
+
+# Algo. 3
+class Solution:
+    def lengthOfLongestSubstring(self, s):
+        """
+        : type s: str
+        : rtype: int
+        :
+        : TC: Time Limit Exceeded with 986/987 test cases passed, O(n^3), see Approach 1 analysis.
+        : SC: O(min(n, m)), see Approach 1 analysis.
+        :\BF Algo. as Approach 1, 2 for-loop to check all possible substrings to see if they are unique, with
+        : set. This algo. has a lot of redundant and unnecessary check and comparison, need to improve the TC.
+        """
+        
+        n = len(s)
+        if n <= 1: return n
+        n_res = 1
+        
+        def allUnique(s, start, end):
+            set_rec = set()
+            for i in range(start, end):
+                if s[i] in set_rec: return False
+                else: set_rec.add(s[i])
+            return True
+        
+        for i in range(n):
+            for j in range(i+1, n+1):
+                # be aware j is exclusive!
+                if allUnique(s, i, j) and j-i > n_res: n_res = j - i
+        
+        return n_res
+
